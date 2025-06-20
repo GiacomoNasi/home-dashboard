@@ -17,6 +17,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
+  max-height: 100%;
 }
 .right-panel {
   flex: 1;
@@ -31,7 +32,7 @@ body {
 }
 .title {
   font-size: 2em;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 .value {
   font-size: 3em;
@@ -40,7 +41,7 @@ body {
 .label {
   font-size: 1.2em;
   color: #555;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
 }
 #weatherBoxes {
   display: flex;
@@ -57,25 +58,24 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100px;
-  height: 100px;
+  width: 10%;
+  height: 30%;
   background: #fff;
   border-radius: 18px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.12);
-  font-size: 1.3em;
-  margin-bottom: 12px;
+  font-size: 1em;
 }
 .weather-hour-time {
-  font-size: 1.4em;
+  font-size: 1em;
   color: #888;
-  margin-bottom: 8px;
+  margin-bottom: 0px;
 }
 .weather-hour-emoji {
-  font-size: 3.5em;
-  margin-bottom: 8px;
+  font-size: 1em;
+  margin-bottom: 0px;
 }
 .weather-hour-temp {
-  font-size: 2em;
+  font-size: 1em;
   font-weight: bold;
   color: #333;
 }
