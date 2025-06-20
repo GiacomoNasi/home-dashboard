@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+        }
+        .dashboard-container {
+            display: flex;
+            height: 100vh;
+        }
+        .left-panel {
+            flex: 1;
+            background: #fff;
+            padding: 40px;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .right-panel {
+            flex: 1;
+            background: #e3eafc;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+        }
+        .title {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .value {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        .label {
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 30px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="left-panel">
+            <div class="title">Casa</div>
+            <div class="value" id="temperature">22°C</div>
+            <div class="label">Temperatura</div>
+            <canvas id="tempChart" width="300" height="120" style="margin-bottom:30px;"></canvas>
+            <div class="value" id="humidity">45%</div>
+            <div class="label">Umidità</div>
+            <canvas id="humChart" width="300" height="120"></canvas>
+        </div>
+        <div class="right-panel">
+            <div class="title">Meteo</div>
+            <div id="weather-info">
+                <!-- Qui puoi inserire le informazioni meteo -->
+                <div class="value">Soleggiato</div>
+                <div class="label">25°C</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Dati di esempio per i grafici
+        const tempData = {
+            labels: ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00'],
+            datasets: [{
+                label: 'Temperatura (°C)',
+                data: [21, 21.5, 22, 22.2, 22.1, 22],
+                borderColor: 'rgba(255,99,132,1)',
+                backgroundColor: 'rgba(255,99,132,0.1)',
+                fill: true,
+                tension: 0.3
+            }]
+        };
+        const humData = {
+            labels: ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00'],
+            datasets: [{
+                label: 'Umidità (%)',
+                data: [44, 45, 45, 46, 45, 45],
+                borderColor: 'rgba(54,162,235,1)',
+                backgroundColor: 'rgba(54,162,235,0.1)',
+                fill: true,
+                tension: 0.3
+            }]
+        };
+        window.onload = function() {
+            new Chart(document.getElementById('tempChart').getContext('2d'), {
+                type: 'line',
+                data: tempData,
+                options: {
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: false } }
+                }
+            });
+            new Chart(document.getElementById('humChart').getContext('2d'), {
+                type: 'line',
+                data: humData,
+                options: {
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: false } }
+                }
+            });
+        };
+    </script>
+</body>
+</html>
