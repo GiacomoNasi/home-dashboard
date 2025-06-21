@@ -1,86 +1,41 @@
 import React, { useEffect, useRef, useState } from "react";
-
-const tempData = {
-  labels: ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00"],
-  datasets: [
-    {
-      label: "Temperatura (°C)",
-      data: [21, 21.5, 22, 22.2, 22.1, 22],
-      borderColor: "rgba(255,99,132,1)",
-      backgroundColor: "rgba(255,99,132,0.1)",
-      fill: true,
-      tension: 0.3,
-    },
-  ],
-};
-const humData = {
-  labels: ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00"],
-  datasets: [
-    {
-      label: "Umidità (%)",
-      data: [44, 45, 45, 46, 45, 45],
-      borderColor: "rgba(54,162,235,1)",
-      backgroundColor: "rgba(54,162,235,0.1)",
-      fill: true,
-      tension: 0.3,
-    },
-  ],
-};
-const weatherHours = [
-  { ora: "00", temp: 18, icon: "🌙" },
-  { ora: "01", temp: 18, icon: "🌙" },
-  { ora: "02", temp: 17, icon: "🌙" },
-  { ora: "03", temp: 17, icon: "🌙" },
-  { ora: "04", temp: 16, icon: "🌙" },
-  { ora: "05", temp: 16, icon: "🌙" },
-  { ora: "06", temp: 17, icon: "🌤️" },
-  { ora: "07", temp: 18, icon: "🌤️" },
-  { ora: "08", temp: 20, icon: "☀️" },
-  { ora: "09", temp: 22, icon: "☀️" },
-  { ora: "10", temp: 24, icon: "☀️" },
-  { ora: "11", temp: 25, icon: "☀️" },
-  { ora: "12", temp: 26, icon: "☀️" },
-  { ora: "13", temp: 27, icon: "☀️" },
-  { ora: "14", temp: 28, icon: "☀️" },
-  { ora: "15", temp: 28, icon: "☀️" },
-  { ora: "16", temp: 27, icon: "☀️" },
-  { ora: "17", temp: 26, icon: "☀️" },
-  { ora: "18", temp: 25, icon: "☀️" },
-  { ora: "19", temp: 24, icon: "☀️" },
-  { ora: "20", temp: 23, icon: "🌤️" },
-  { ora: "21", temp: 22, icon: "🌤️" },
-  { ora: "22", temp: 21, icon: "🌙" },
-  { ora: "23", temp: 20, icon: "🌙" },
-];
+import Chart from "chart.js/auto";
+import { tempData, humData, weatherHours } from './data.js';
 
 function Dashboard() {
   const tempChartRef = useRef(null);
   const humChartRef = useRef(null);
+  const tempChartInstance = useRef(null);
+  const humChartInstance = useRef(null);
   const [dateTime, setDateTime] = useState("");
 
   useEffect(() => {
-    if (window.Chart) {
-      if (tempChartRef.current) {
-        new window.Chart(tempChartRef.current, {
-          type: "line",
-          data: tempData,
-          options: {
-            plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: false } },
-          },
-        });
-      }
-      if (humChartRef.current) {
-        new window.Chart(humChartRef.current, {
-          type: "line",
-          data: humData,
-          options: {
-            plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: false } },
-          },
-        });
-      }
+    if (tempChartRef.current) {
+      if (tempChartInstance.current) tempChartInstance.current.destroy();
+      tempChartInstance.current = new Chart(tempChartRef.current, {
+        type: "line",
+        data: tempData,
+        options: {
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: false } },
+        },
+      });
     }
+    if (humChartRef.current) {
+      if (humChartInstance.current) humChartInstance.current.destroy();
+      humChartInstance.current = new Chart(humChartRef.current, {
+        type: "line",
+        data: humData,
+        options: {
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: false } },
+        },
+      });
+    }
+    return () => {
+      if (tempChartInstance.current) tempChartInstance.current.destroy();
+      if (humChartInstance.current) humChartInstance.current.destroy();
+    };
   }, []);
 
   useEffect(() => {

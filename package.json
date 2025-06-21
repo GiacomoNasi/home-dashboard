@@ -20,7 +20,8 @@
     "@babel/preset-react": "^7.24.7",
     "style-loader": "^3.3.4",
     "css-loader": "^6.10.0",
-    "html-webpack-plugin": "^5.5.4"
+    "html-webpack-plugin": "^5.5.4",
+    "chart.js": "^4.4.2"
   }
 }
 
