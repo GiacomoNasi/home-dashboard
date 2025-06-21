@@ -57,10 +57,10 @@ function Dashboard() {
         <div className="title">Casa</div>
         <div className="value" id="temperature">22°C</div>
         <div className="label">Temperatura</div>
-        <canvas ref={tempChartRef} width={180} height={90} style={{ marginBottom: 20 }} />
+        <canvas ref={tempChartRef} width="100%" height="30%" style={{ marginBottom: 20 }} />
         <div className="value" id="humidity">45%</div>
         <div className="label">Umidità</div>
-        <canvas ref={humChartRef} width={180} height={90} />
+        <canvas ref={humChartRef}width="100%" height="30%" />
       </div>
       <div className="right-panel" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-end', height: '100%' }}>
         <div style={{ width: '100%', height: "50%" }}>
