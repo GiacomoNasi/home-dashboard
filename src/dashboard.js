@@ -1,39 +1,30 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home Dashboard React (senza Node)</title>
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <link rel="stylesheet" href="dashboard-react.css">
-</head>
-<body>
-  <div id="root"></div>
-  <script type="text/babel">
+import React, { useEffect, useRef, useState } from "react";
+
 const tempData = {
   labels: ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00"],
-  datasets: [{
-    label: "Temperatura (°C)",
-    data: [21, 21.5, 22, 22.2, 22.1, 22],
-    borderColor: "rgba(255,99,132,1)",
-    backgroundColor: "rgba(255,99,132,0.1)",
-    fill: true,
-    tension: 0.3
-  }]
+  datasets: [
+    {
+      label: "Temperatura (°C)",
+      data: [21, 21.5, 22, 22.2, 22.1, 22],
+      borderColor: "rgba(255,99,132,1)",
+      backgroundColor: "rgba(255,99,132,0.1)",
+      fill: true,
+      tension: 0.3,
+    },
+  ],
 };
 const humData = {
   labels: ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00"],
-  datasets: [{
-    label: "Umidità (%)",
-    data: [44, 45, 45, 46, 45, 45],
-    borderColor: "rgba(54,162,235,1)",
-    backgroundColor: "rgba(54,162,235,0.1)",
-    fill: true,
-    tension: 0.3
-  }]
+  datasets: [
+    {
+      label: "Umidità (%)",
+      data: [44, 45, 45, 46, 45, 45],
+      borderColor: "rgba(54,162,235,1)",
+      backgroundColor: "rgba(54,162,235,0.1)",
+      fill: true,
+      tension: 0.3,
+    },
+  ],
 };
 const weatherHours = [
   { ora: "00", temp: 18, icon: "🌙" },
@@ -59,15 +50,15 @@ const weatherHours = [
   { ora: "20", temp: 23, icon: "🌤️" },
   { ora: "21", temp: 22, icon: "🌤️" },
   { ora: "22", temp: 21, icon: "🌙" },
-  { ora: "23", temp: 20, icon: "🌙" }
+  { ora: "23", temp: 20, icon: "🌙" },
 ];
 
 function Dashboard() {
-  const tempChartRef = React.useRef(null);
-  const humChartRef = React.useRef(null);
-  const [dateTime, setDateTime] = React.useState("");
+  const tempChartRef = useRef(null);
+  const humChartRef = useRef(null);
+  const [dateTime, setDateTime] = useState("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (window.Chart) {
       if (tempChartRef.current) {
         new window.Chart(tempChartRef.current, {
@@ -75,8 +66,8 @@ function Dashboard() {
           data: tempData,
           options: {
             plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: false } }
-          }
+            scales: { y: { beginAtZero: false } },
+          },
         });
       }
       if (humChartRef.current) {
@@ -85,14 +76,14 @@ function Dashboard() {
           data: humData,
           options: {
             plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: false } }
-          }
+            scales: { y: { beginAtZero: false } },
+          },
         });
       }
     }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     function updateDateTime() {
       const now = new Date();
       const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
@@ -111,35 +102,36 @@ function Dashboard() {
         <div className="title">Casa</div>
         <div className="value" id="temperature">22°C</div>
         <div className="label">Temperatura</div>
-        <canvas ref={tempChartRef} width={180} height="50%" style={{ marginBottom: 20 }} />
+        <canvas ref={tempChartRef} width={180} height={90} style={{ marginBottom: 20 }} />
         <div className="value" id="humidity">45%</div>
         <div className="label">Umidità</div>
-        <canvas ref={humChartRef} width={180} height="50%" />
+        <canvas ref={humChartRef} width={180} height={90} />
       </div>
-      <div className="right-panel">
-        <div className="title" style={{ marginTop: 40 }}>Meteo</div>
-        <div style={{ fontSize: '1.1em', color: '#444', marginBottom: 18 }}>{dateTime}</div>
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-          <div className="value">Soleggiato</div>
-          <div className="label">25°C</div>
-          <div id="weatherBoxes">
-            {weatherHours.map((w) => (
-              <div key={w.ora} className="weather-hour-box">
-                <div className="weather-hour-time">{w.ora}:00</div>
-                <div className="weather-hour-emoji">{w.icon}</div>
-                <div className="weather-hour-temp">{w.temp}°</div>
-              </div>
-            ))}
+      <div className="right-panel" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-end', height: '100%' }}>
+        <div style={{ width: '100%', height: "50%" }}>
+          <div className="title" style={{ marginTop: 40 }}>Meteo</div>
+          <div style={{ fontSize: '1.1em', color: '#444', marginBottom: 18 }}>{dateTime}</div>
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+            <div className="value">Soleggiato</div>
+            <div className="label">25°C</div>
+            <div id="weatherBoxes">
+              {weatherHours.map((w) => (
+                <div key={w.ora} className="weather-hour-box">
+                  <div className="weather-hour-time">{w.ora}:00</div>
+                  <div className="weather-hour-emoji">{w.icon}</div>
+                  <div className="weather-hour-temp">{w.temp}°</div>
+                </div>
+              ))}
+            </div>
           </div>
+        </div>
+        <div style={{ width: '100%', height: "50%", marginTop: 30, textAlign: 'right', fontSize: '1.3em', color: '#333', fontStyle: 'italic' }}>
+          "Questa è una frase personalizzata in basso a destra."
         </div>
       </div>
     </div>
   );
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<Dashboard />);
-  </script>
-</body>
-</html>
+export default Dashboard;
 
