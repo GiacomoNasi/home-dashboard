@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import Chart from "chart.js/auto";
-import { tempData, humData, weatherHours, getWeatherHours } from './data.js';
+import { tempData, humData, weatherHours, getWeatherHours, handleTelegramUpdate } from './data.js';
+import config from './config.json';
+
 
 function Dashboard() {
   const tempChartRef = useRef(null);
@@ -9,22 +11,62 @@ function Dashboard() {
   const humChartInstance = useRef(null);
   const [dateTime, setDateTime] = useState("");
   const [weatherHours, setWeatherHours] = useState([])
-  const [coords, setCoords] = useState({ latitude: 41.89, longitude: 12.48 }); // default Roma
+  const [intervalStarted, setIntervalStartred] = useState(false) 
+  const [message, setMessage] = useState("No message ...");
+  const messageRef = useRef(message);
+
+  const startedRef = useRef(false);
+
+  // Aggiorna messageRef.current ogni volta che message cambia
+  useEffect(() => {
+    messageRef.current = message;
+  }, [message]);
 
   useEffect(() => {
-    let interval = null
+    // Cleanup intervalli globali se già esistenti (hot reload/StrictMode)
+    if (window.__dashboardMeteoInterval) {
+      clearInterval(window.__dashboardMeteoInterval);
+      window.__dashboardMeteoInterval = null;
+    }
+    if (window.__dashboardBotInterval) {
+      clearInterval(window.__dashboardBotInterval);
+      window.__dashboardBotInterval = null;
+    }
+
+    let meteoInterval = null;
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => {interval = setInterval(() => {
-          getWeatherHours(pos.coords.latitude, pos.coords.longitude).then(data => setWeatherHours(data));
-        }, 5000)},
+        (pos) => {
+          meteoInterval = setInterval(() => {
+            getWeatherHours(pos.coords.latitude, pos.coords.longitude).then(data => setWeatherHours(data));
+          }, 5000);
+          window.__dashboardMeteoInterval = meteoInterval;
+        },
         (err) => console.warn('Geoloc non disponibile, uso default'),
-        { enableHighAccuracy: true, timeout: 5000 }
+        { enableHighAccuracy: true, timeout: 60000 }
       );
     }
 
-    return () => clearInterval(interval);
+    let botInterval = setInterval(_ => {
+      handleTelegramUpdate(config.botToken).then(update => {
+        let newMessage = (update.result || [{message: {text: 'Could not retrieve messages'}}]).slice(-1)[0].message.text;
+        if (newMessage !== messageRef.current) {
+          setMessage(newMessage);
+        }
+      })
+    }, 5000);
+    window.__dashboardBotInterval = botInterval;
 
+    return () => {
+      if (window.__dashboardMeteoInterval) {
+        clearInterval(window.__dashboardMeteoInterval);
+        window.__dashboardMeteoInterval = null;
+      }
+      if (window.__dashboardBotInterval) {
+        clearInterval(window.__dashboardBotInterval);
+        window.__dashboardBotInterval = null;
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -57,9 +99,10 @@ function Dashboard() {
     };
   }, []);
 
-  
-
   useEffect(() => {
+    handleTelegramUpdate(config.botToken)
+
+
     function updateDateTime() {
       const now = new Date();
       const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
@@ -71,7 +114,7 @@ function Dashboard() {
     const interval = setInterval(updateDateTime, 1000);
     return () => clearInterval(interval);
   }, []);
-
+  
   return (
     <div className="dashboard-container">
       <div className="left-panel">
@@ -86,7 +129,7 @@ function Dashboard() {
       <div className="right-panel" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'stretch', height: '100%' }}>
         <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            <div className="value">25°C Soleggiato</div>
+            <div className="value">{weatherHours[new Date().getHours()]?.temp || 'Unknown'}°C {weatherHours[new Date().getHours()]?.desc || 'Unknown'}</div>
             <div className="label">{dateTime}</div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
@@ -105,7 +148,8 @@ function Dashboard() {
         </div>
         <div style={{ width: '100%', height: '50%', marginTop: 'auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end' }}>
           <div style={{ width: '100%', textAlign: 'right', fontSize: '1.3em', color: '#333', fontStyle: 'italic' }}>
-            "Questa è una frase personalizzata in basso a destra."
+          <button onClick={_ => updateMessage(setMessage)} style={{ marginRight: 10, fontSize: '1em' }}>Aggiorna Messaggio</button>
+            {message}
           </div>
         </div>
       </div>

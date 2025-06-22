@@ -97,3 +97,14 @@ export async function getWeatherHours(lat, long) {
 
   return hours;
 }
+
+export async function handleTelegramUpdate(botToken) {
+  // Leggi l'ultimo messaggio del bot nella chat
+  const getUpdatesUrl = `https://api.telegram.org/bot${botToken}/getUpdates`;
+  const updatesResponse = await fetch(getUpdatesUrl);
+  const updatesData = await updatesResponse.json();
+
+  // Trova l'ultimo messaggio inviato dal bot nella stessa chat
+  return updatesData
+
+}
