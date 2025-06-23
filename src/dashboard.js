@@ -208,7 +208,7 @@ function Dashboard() {
             ))}
           </div>
         </div>
-        <div style={{ width: '100%', height: '50%', marginTop: 'auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end', position: 'relative' }}>
+        <div style={{ width: '100%', height: '50%', marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', position: 'relative' }}>
           <button
             onClick={updateMessageManual}
             style={{
@@ -226,7 +226,7 @@ function Dashboard() {
           >
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.13-3.36L23 10M1 14l5.36 4.36A9 9 0 0 0 20.49 15"/></svg>
           </button>
-          <div style={{ width: '100%', textAlign: 'left', fontSize: getMessageFontSize(message), color: '#333', fontStyle: 'italic', wordBreak: 'break-word', lineHeight: 1.1, overflowWrap: 'break-word', whiteSpace: 'pre-line', maxHeight: '100%', overflowY: 'auto', paddingRight: 40 }}>
+          <div style={{ width: '100%', textAlign: 'left', fontSize: getMessageFontSize(message), color: '#333', fontStyle: 'bold', wordBreak: 'break-word', lineHeight: 1.1, overflowWrap: 'break-word', whiteSpace: 'pre-line', maxHeight: '100%', overflowY: 'auto', paddingRight: 40, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', height: '100%' }}>
             {message}
           </div>
         </div>
