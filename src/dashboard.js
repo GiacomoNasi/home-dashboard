@@ -14,8 +14,6 @@ function Dashboard() {
   const [message, setMessage] = useState();
   const messageRef = useRef(message);
 
-  const startedRef = useRef(false);
-
   // Aggiorna messageRef.current ogni volta che message cambia
   useEffect(() => {
     messageRef.current = message;
@@ -60,6 +58,7 @@ function Dashboard() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
+          getWeatherHours(pos.coords.latitude, pos.coords.longitude).then(data => setWeatherHours(data));
           meteoInterval = setInterval(() => {
             getWeatherHours(pos.coords.latitude, pos.coords.longitude).then(data => setWeatherHours(data));
           }, 5000);
@@ -209,9 +208,25 @@ function Dashboard() {
             ))}
           </div>
         </div>
-        <div style={{ width: '100%', height: '50%', marginTop: 'auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end' }}>
-          <div style={{ width: '100%', textAlign: 'right', fontSize: getMessageFontSize(message), color: '#333', fontStyle: 'italic', wordBreak: 'break-word', lineHeight: 1.1, overflowWrap: 'break-word', whiteSpace: 'pre-line', maxHeight: '100%', overflowY: 'auto' }}>
-          <button onClick={updateMessageManual} style={{ marginRight: 10, fontSize: '1em' }}>Aggiorna Messaggio</button>
+        <div style={{ width: '100%', height: '50%', marginTop: 'auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end', position: 'relative' }}>
+          <button
+            onClick={updateMessageManual}
+            style={{
+              position: 'absolute',
+              top: 10,
+              right: 10,
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+              zIndex: 2
+            }}
+            title="Aggiorna Messaggio"
+            aria-label="Aggiorna Messaggio"
+          >
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.13-3.36L23 10M1 14l5.36 4.36A9 9 0 0 0 20.49 15"/></svg>
+          </button>
+          <div style={{ width: '100%', textAlign: 'left', fontSize: getMessageFontSize(message), color: '#333', fontStyle: 'italic', wordBreak: 'break-word', lineHeight: 1.1, overflowWrap: 'break-word', whiteSpace: 'pre-line', maxHeight: '100%', overflowY: 'auto', paddingRight: 40 }}>
             {message}
           </div>
         </div>
