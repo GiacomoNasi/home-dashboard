@@ -33,8 +33,9 @@ function Dashboard() {
   // Funzione per processare gli update e aggiornare localStorage
   function processTelegramUpdates(updatesData) {
     console.log('Telegram updates:', updatesData.result);
-    if (updatesData.result && updatesData.result.length > 0) {
-      const last = updatesData.result[updatesData.result.length - 1];
+    let filteredUpdatesData = updatesData.result.filter(upd => !upd.message?.from?.is_bot)
+    if (filteredUpdatesData.result && filteredUpdatesData.result.length > 0) {
+      const last = filteredUpdatesData.result[filteredUpdatesData.result.length - 1];
       setTelegramOffset(last.update_id);
       const lastMsg = (last.message && last.message.text) ? last.message.text : 'No message ...';
       localStorage.setItem('telegram_last_message', lastMsg);
