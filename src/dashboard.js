@@ -168,6 +168,15 @@ function Dashboard() {
     });
   }
 
+  // Calcola la dimensione ottimale del font per il messaggio
+  function getMessageFontSize(msg) {
+    if (!msg) return '1.3em';
+    if (msg.length < 30) return '2.2em';
+    if (msg.length < 60) return '1.7em';
+    if (msg.length < 100) return '1.2em';
+    return '1em';
+  }
+
   return (
     <div className="dashboard-container">
       <div className="left-panel">
@@ -201,7 +210,7 @@ function Dashboard() {
           </div>
         </div>
         <div style={{ width: '100%', height: '50%', marginTop: 'auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end' }}>
-          <div style={{ width: '100%', textAlign: 'right', fontSize: '1.3em', color: '#333', fontStyle: 'italic' }}>
+          <div style={{ width: '100%', textAlign: 'right', fontSize: getMessageFontSize(message), color: '#333', fontStyle: 'italic', wordBreak: 'break-word', lineHeight: 1.1, overflowWrap: 'break-word', whiteSpace: 'pre-line', maxHeight: '100%', overflowY: 'auto' }}>
           <button onClick={updateMessageManual} style={{ marginRight: 10, fontSize: '1em' }}>Aggiorna Messaggio</button>
             {message}
           </div>
