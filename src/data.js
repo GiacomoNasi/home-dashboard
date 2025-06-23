@@ -108,3 +108,18 @@ export async function handleTelegramUpdate(botToken, offset) {
   const updatesData = await updatesResponse.json();
   return updatesData;
 }
+
+export async function addTelegramReaction(botToken, chatId, messageId, emoji) {
+  const url = `https://api.telegram.org/bot${botToken}/setMessageReaction`;
+  const body = {
+    chat_id: chatId,
+    message_id: messageId,
+    reaction: [{ type: "emoji", emoji }]
+  };
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  return response.json();
+}

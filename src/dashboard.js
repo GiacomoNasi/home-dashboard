@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Chart from "chart.js/auto";
-import { tempData, humData, weatherHours, getWeatherHours, handleTelegramUpdate } from './data.js';
+import { tempData, humData, weatherHours, getWeatherHours, handleTelegramUpdate, addTelegramReaction } from './data.js';
 import config from './config.json';
 
 
@@ -32,14 +32,17 @@ function Dashboard() {
 
   // Funzione per processare gli update e aggiornare localStorage
   function processTelegramUpdates(updatesData) {
-    console.log('Telegram updates:', updatesData.result);
-    let filteredUpdatesData = updatesData.result.filter(upd => !upd.message?.from?.is_bot)
-    if (filteredUpdatesData.result && filteredUpdatesData.result.length > 0) {
-      const last = filteredUpdatesData.result[filteredUpdatesData.result.length - 1];
-      setTelegramOffset(last.update_id);
-      const lastMsg = (last.message && last.message.text) ? last.message.text : 'No message ...';
-      localStorage.setItem('telegram_last_message', lastMsg);
-      return lastMsg;
+    if (updatesData.result && updatesData.result.length > 0) {
+      // Filtra solo messaggi da utenti (non bot)
+      const userMessages = updatesData.result.filter(
+        upd => upd.message && upd.message.from && !upd.message.from.is_bot
+      );
+      if (userMessages.length > 0) {
+        const last = userMessages[userMessages.length - 1];
+        setTelegramOffset(last.update_id);
+        localStorage.setItem('telegram_last_message', last.message.text || 'No message ...');
+        return last.message;
+      }
     }
     return null;
   }
@@ -73,26 +76,37 @@ function Dashboard() {
     // All'avvio, recupera l'ultimo messaggio già presente se non ci sono nuovi update
     const offset = getTelegramOffset();
     handleTelegramUpdate(config.botToken, offset).then(updatesData => {
-      let newMessage = null;
+      let newMsgObj = null;
       if (updatesData.result && updatesData.result.length > 0) {
-        // Se ci sono nuovi update, processa normalmente
-        newMessage = processTelegramUpdates(updatesData);
+        newMsgObj = processTelegramUpdates(updatesData);
       } else {
-        // Se non ci sono nuovi update, mostra l'ultimo messaggio salvato
         const lastMsg = localStorage.getItem('telegram_last_message') || 'No message ...';
         setMessage(lastMsg);
       }
-      if (newMessage && newMessage !== messageRef.current) {
-        setMessage(newMessage);
+      if (newMsgObj && newMsgObj.text && newMsgObj.text !== messageRef.current) {
+        setMessage(newMsgObj.text);
+        // Manda la reaction dopo aver aggiornato il messaggio
+        addTelegramReaction(
+          config.botToken,
+          newMsgObj.chat.id,
+          newMsgObj.message_id,
+          '\u2705'
+        );
       }
     });
 
     let botInterval = setInterval(_ => {
       const offset = getTelegramOffset();
       handleTelegramUpdate(config.botToken, message !== undefined ? offset : 0).then(updatesData => {
-        const newMessage = processTelegramUpdates(updatesData);
-        if (newMessage && newMessage !== messageRef.current) {
-          setMessage(newMessage);
+        const newMsgObj = processTelegramUpdates(updatesData);
+        if (newMsgObj && newMsgObj.text && newMsgObj.text !== messageRef.current) {
+          setMessage(newMsgObj.text);
+          addTelegramReaction(
+            config.botToken,
+            newMsgObj.chat.id,
+            newMsgObj.message_id,
+            '\u2764' // codice UTF-16 per ✅
+          );
         }
       })
     }, 5000);
@@ -160,10 +174,16 @@ function Dashboard() {
   function updateMessageManual() {
     const offset = getTelegramOffset();
     handleTelegramUpdate(config.botToken, offset).then(updatesData => {
-      const newMessage = processTelegramUpdates(updatesData);
-      if (newMessage && newMessage !== messageRef.current) {
-        setMessage(newMessage);
-        localStorage.setItem('telegram_last_message', newMessage);
+      const newMsgObj = processTelegramUpdates(updatesData);
+      if (newMsgObj && newMsgObj.text && newMsgObj.text !== messageRef.current) {
+        setMessage(newMsgObj.text);
+        localStorage.setItem('telegram_last_message', newMsgObj.text);
+        addTelegramReaction(
+          config.botToken,
+          newMsgObj.chat.id,
+          newMsgObj.message_id,
+          '\u2705' // codice UTF-16 per ✅
+        );
       }
     });
   }
