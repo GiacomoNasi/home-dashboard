@@ -7,12 +7,12 @@ ECHO [1/4] Pull da GitLab...
 git pull
 
 ECHO [2/4] Installazione dipendenze...
-npm install
+call npm install
 
 ECHO [3/4] Build progetto...
-npm run build
+call npm run build
 
 ECHO [4/4] Avvio server in modalità produzione...
-npm start
+call npm run start
 
 ENDLOCAL
